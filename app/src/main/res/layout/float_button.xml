@@ -1,10 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/floatButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/btn_bottom_confirm_bg"
-    android:padding="2dp"
-    android:text="CLICK ME" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="150dp"
+    android:layout_height="190dp"
+    android:orientation="vertical"
+    android:id="@+id/floatButton">
+
+
+
+
+
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="拖动" />
+    <Button
+        android:id="@+id/eastButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="100dp"
+        android:layout_below="@+id/textView1"
+        android:text="东"
+        />
+
+    <Button
+        android:id="@+id/southButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+
+        android:layout_below="@+id/textView1"
+
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="50dp"
+        android:text="南"
+        />
+    <Button
+        android:id="@+id/westButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="00dp"
+        android:layout_marginTop="00dp"
+        android:layout_below="@+id/textView1"
+        android:text="西"
+        />
+    <Button
+        android:id="@+id/northButton"
+        android:layout_width="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/textView1"
+        android:text="北"
+        />
+</RelativeLayout>

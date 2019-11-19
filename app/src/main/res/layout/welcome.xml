@@ -4,8 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="1"
     android:background="@color/white">
+
+
+
+
 
     <ImageView
         android:id="@+id/startImageView"
@@ -14,17 +17,47 @@
         app:srcCompat="@drawable/welcome"
         android:contentDescription="@string/startImgDesp" />
 
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:id="@+id/usename"
+        android:layout_marginTop="105dp"
+        android:inputType="text"
+        android:paddingRight="60dp"
+        style="@style/EditTextStyle"
+        android:maxLength="20"
+
+        android:background="@drawable/edit_bg"
+
+        android:paddingLeft="55dp"/>
+
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        style="@style/EditTextStyle"
+        android:inputType="textPassword"
+        android:layout_marginTop="305dp"
+        android:maxLength="20"
+        android:background="@drawable/edit_bg"
+        android:paddingLeft="55dp"
+        android:paddingRight="60dp" />
+
+
+
     <Button
         android:id="@+id/startButton"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="30dp"
         android:background="@drawable/btn_bottom_confirm_bg"
         android:gravity="center"
         android:text="@string/startUse"
         android:textSize="17sp"
         android:textAlignment="center"
         android:layout_gravity="bottom|center"
-        android:layout_margin="106dp" />
+        android:layout_margin="96dp" />
 
     <TextView
         android:layout_width="wrap_content"

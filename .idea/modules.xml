@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MockGPS.iml" filepath="$PROJECT_DIR$/MockGPS.iml" />
+      <module fileurl="file://D:\workspace\MockGPS-master\MockGPS.iml" filepath="D:\workspace\MockGPS-master\MockGPS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MockGPS-master.iml" filepath="$PROJECT_DIR$/MockGPS-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

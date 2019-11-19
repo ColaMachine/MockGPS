@@ -27,12 +27,9 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
-import com.example.log4j.LogUtil;
+import com.example.mockgps.MainActivity;
 import com.example.mockgps.R;
 
-import org.apache.log4j.Logger;
-
-import java.util.List;
 import java.util.UUID;
 
 public class MockGpsService extends Service {
@@ -44,21 +41,19 @@ public class MockGpsService extends Service {
     private HandlerThread handlerThread;
     private Handler handler;
 
-    private boolean isStop = true;
+    private boolean isStop=true;
 
     //经纬度字符串
-    private String latLngInfo = "104.06121778639009&30.544111926165282";
-
+    public static String latLngInfo="104.06121778639009&30.544111926165282";
+//    public static String targetlatLngInfo="104.06121778639009&30.544111926165282";
     //悬浮窗
     private FloatWindow floatWindow;
-    private boolean isFloatWindowStart = false;
+    private boolean isFloatWindowStart=false;
 
 
-    public static final int RunCode = 0x01;
-    public static final int StopCode = 0x02;
+    public static final int RunCode=0x01;
+    public static final int StopCode=0x02;
 
-    //log debug
-    private static Logger log = Logger.getLogger(MockGpsService.class);
 
     @Nullable
     @Override
@@ -88,34 +83,25 @@ public class MockGpsService extends Service {
         setGPSTestProvider();
 
         //thread
-        handlerThread = new HandlerThread(getUUID(), -2);
+        handlerThread=new HandlerThread(getUUID(),-2);
         handlerThread.start();
 
-        handler = new Handler(handlerThread.getLooper()) {
-            public void handleMessage(Message msg) {
+        handler=new Handler(handlerThread.getLooper()){
+            public void handleMessage(Message msg){
                 try {
-                    Thread.sleep(128);
-                    if (!isStop) {
-
-                        //remove default network location provider
-                        //rmNetworkProvider();
-
-                        //add a new network location provider
-                        //setNewNetworkProvider();
-
-                        setTestProviderLocation();
-                        setGPSLocation();
+                    Thread.sleep(200);
+                    if (!isStop){11
+                        setNetworkLocation();
                         sendEmptyMessage(0);
                         //broadcast to MainActivity
-                        Intent intent = new Intent();
+                        Intent intent=new Intent();
                         intent.putExtra("statusCode", RunCode);
                         intent.setAction("com.example.service.MockGpsService");
                         sendBroadcast(intent);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                    Log.d(TAG, "handleMessage error");
-                    log.debug(TAG + ": handleMessage error");
+                    Log.d(TAG, "setNetworkLocation error");
                     Thread.currentThread().interrupt();
                 }
             }
@@ -127,19 +113,18 @@ public class MockGpsService extends Service {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Log.d(TAG, "onStart");
-        log.debug(TAG + ": onStart");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        DisplayToast("onStartCommand");
         Log.d(TAG, "onStartCommand");
-        log.debug(TAG + ": onStartCommand");
 //        DisplayToast("Mock Location Service Start");
         //
 
         String channelId = "channel_01";
-        String name = "channel_name";
+        String name="channel_name";
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification notification = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -162,22 +147,25 @@ public class MockGpsService extends Service {
                     .setChannelId(channelId);//无效
             notification = notificationBuilder.build();
         }
-        startForeground(1, notification);
+        startForeground(1,notification);
         //
 
         //get location info from mainActivity
-        latLngInfo = intent.getStringExtra("key");
-        Log.d(TAG, "DataFromMain is " + latLngInfo);
-        log.debug(TAG + ": DataFromMain is " + latLngInfo);
+        latLngInfo=intent.getStringExtra("key");
+        //targetlatLngInfo=latLngInfo;
+        Toast ts = Toast.makeText(MockGpsService.this,"接收到新的定位!", Toast.LENGTH_LONG);
+        Log.d(TAG, "dataFromMain is "+latLngInfo);
         //start to refresh location
-        isStop = false;
+        isStop=false;
 
         //这里开启悬浮窗
-        if (!isFloatWindowStart) {
-            floatWindow = new FloatWindow(this);
+        if (!isFloatWindowStart){
+            floatWindow=new FloatWindow(this);
             floatWindow.showFloatWindow();
-            isFloatWindowStart = true;
+            isFloatWindowStart=true;
         }
+
+
 
 
 //        return START_STICKY;
@@ -186,29 +174,25 @@ public class MockGpsService extends Service {
 
     @Override
     public void onDestroy() {
+        DisplayToast("Mock Loction Service finish");
         Log.d(TAG, "onDestroy");
-        log.debug(TAG + ": onDestroy");
 //        Toast.makeText(this, "Service destroyed", Toast.LENGTH_SHORT).show();
 
 //        DisplayToast("Mock Loction Service finish");
-        isStop = true;
+        isStop=true;
 
         //移除悬浮窗
         floatWindow.hideFloatWindow();
-        isFloatWindowStart = false;
+        isFloatWindowStart=false;
 
         handler.removeMessages(0);
         handlerThread.quit();
+        rmNetworkProvider();
 
-        //remove test provider
-        rmNetworkTestProvider();
-        rmGPSTestProvider();
-
-        //rmGPSProvider();
         stopForeground(true);
 
         //broadcast to MainActivity
-        Intent intent = new Intent();
+        Intent intent=new Intent();
         intent.putExtra("statusCode", StopCode);
         intent.setAction("com.example.service.MockGpsService");
         sendBroadcast(intent);
@@ -216,14 +200,6 @@ public class MockGpsService extends Service {
         super.onDestroy();
     }
 
-    //provider test
-    public void getProviders() {
-        List<String> providerList = locationManager.getProviders(true);
-        for (String str : providerList) {
-            Log.d("PROV", str);
-            log.debug("active provider: " + str);
-        }
-    }
 
     //generate a location
     public Location generateLocation(LatLng latLng) {
@@ -250,27 +226,83 @@ public class MockGpsService extends Service {
 //        Log.d("WATCH",loc.toString());
         return loc;
     }
-
-    //给test provider添加网络定位
-    private void setTestProviderLocation() {
+    private long lastMoveTime=0;
+    private long excuteTimes =0;
+    //set network location
+    private void setNetworkLocation() { //DisplayToast("setNetworkLocation"+(excuteTimes++));
         //default location 30.5437233 104.0610342 成都长虹科技大厦
-        Log.d(TAG, "setNetworkLocation: " + latLngInfo);
-        log.debug(TAG + ": setNetworkLocation: " + latLngInfo);
-        String latLngStr[] = latLngInfo.split("&");
+        String latLngStr[]=latLngInfo.split("&");
+//        String targetlatLngStr[]=latLngInfo.split("&");
+//        long nowTime = System.currentTimeMillis();
+//        String ary[] = MockGpsService.targetlatLngInfo .split("&");
+        if(Math.abs(FloatWindow.nowPisX)>100 ||Math.abs(FloatWindow.nowPisY)>100  ){
+            DisplayToast("over range "+FloatWindow.nowPisX+"&"+FloatWindow.nowPisY);
+        }
+        if(FloatWindow.nowPisX!=0  || FloatWindow.nowPisY!=0) {
+            double lat = Double.valueOf(latLngStr[0]) + (FloatWindow.nowPisX) / 250 * 0.00008;
+            latLngStr[0]=lat+"";
+            double lng = Double.valueOf(latLngStr[1]) + (FloatWindow.nowPisY) / 250 * 0.00008;
+            latLngStr[1]=lng+"";
+            latLngInfo = latLngStr[0]+"&"+latLngStr[1];
+            //.targetlatLngInfo = lat + "&" + lng;
+        }
+//        double nowLat= Double.valueOf(latLngStr[1]);
+//        double nowLng= Double.valueOf(latLngStr[0]);
         LatLng latLng = new LatLng(Double.valueOf(latLngStr[1]), Double.valueOf(latLngStr[0]));
+
+//        if(targetlatLngInfo==null || targetlatLngInfo.equals("")){
+//            targetlatLngInfo = latLngInfo;
+//        }
+//       if(!targetlatLngInfo.equals(latLngInfo)){
+//           latLngInfo=targetlatLngInfo;
+
+//
+//           if(lastMoveTime==0){
+//               lastMoveTime=nowTime;
+//
+//
+//           }
+//           if(nowTime-lastMoveTime>3000){
+//               lastMoveTime=nowTime;
+//
+//           }
+//           double targetLat= Double.valueOf(targetlatLngStr[1]);
+//           double targetLng= Double.valueOf(targetlatLngStr[0]);
+//         //  LatLng targetlatLng = new LatLng(Double.valueOf(targetlatLngStr[1]), Double.valueOf(targetlatLngStr[0]));
+//          boolean changed =false;
+//           if(Math.abs(targetLat-nowLat)>0.000008){
+//               changed=true;
+//               nowLat+=((targetLat-nowLat)<0?-1:1 )*0.000008  * (nowTime-lastMoveTime)/1000;//移动这一时间间隔里移动的距离 //1秒1米
+//           }
+//           if(Math.abs(targetLng-nowLng)>0.000008){
+//               changed=true;
+//               nowLng +=((targetLng-nowLng)<0?-1:1 )*0.000008  * (nowTime-lastMoveTime)/1000;//移动这一时间间隔里移动的距离 //1秒1米
+//           }
+//
+//           if(!changed){
+//               latLngInfo=targetlatLngInfo;
+//           }else{
+//               latLngInfo=nowLng+"&"+nowLat;
+//           }
+//
+//           //如果都等于了
+//
+//           //latLng =new LatLng(Double.valueOf(targetlatLngStr[1]), Double.valueOf(targetlatLngStr[0]));
+//
+//           latLng = new LatLng(nowLat, nowLng);
+
+
+//       }
         String providerStr = LocationManager.NETWORK_PROVIDER;
-//        String providerStr2 = LocationManager.GPS_PROVIDER;
         try {
             locationManager.setTestProviderLocation(providerStr, generateLocation(latLng));
-//            locationManager.setTestProviderLocation(providerStr2, generateLocation(latLng));
             //for test
 //            locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, generateLocation(latLng));
         } catch (Exception e) {
             Log.d(TAG, "setNetworkLocation error");
-            log.debug(TAG + ": setNetworkLocation error");
             e.printStackTrace();
         }
-    }
+        //慢慢的走过去
 
     //set gps location
     private void setGPSLocation(){

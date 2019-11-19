@@ -58,6 +58,8 @@
     <color name="burlywood">#deb887</color> <!-- 实木色 -->
     <color name="plum">#dda0dd</color> <!-- 洋李色 -->
     <color name="gainsboro">#dcdcdc</color> <!-- 淡灰色 -->
+    <color name="border_color">#000000</color> <!-- 洋李色 -->
+
     <color name="crimson">#dc143c</color> <!-- 暗深红色 -->
     <color name="palevioletred">#db7093</color> <!-- 苍紫罗兰色 -->
     <color name="goldenrod">#daa520</color> <!-- 金麒麟色 -->

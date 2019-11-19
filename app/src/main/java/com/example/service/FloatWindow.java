@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.mockgps.MainActivity;
@@ -38,6 +39,7 @@ public class FloatWindow implements View.OnTouchListener {
 
     FloatWindow(Service context) {
         this.mContext = context;
+
         initFloatWindow();
     }
 
@@ -49,6 +51,44 @@ public class FloatWindow implements View.OnTouchListener {
         mFloatLayout = (View) inflater.inflate(R.layout.float_button, null);
         mFloatLayout.setOnTouchListener(this);
 
+        Button northButton = (Button)mFloatLayout.findViewById(R.id.northButton);
+
+        northButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updatePos(0,250);
+            }
+        });
+
+
+        Button southButton = (Button)mFloatLayout.findViewById(R.id.southButton);
+
+        southButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updatePos(0,-250);
+            }
+        });
+
+        Button eastButton = (Button)mFloatLayout.findViewById(R.id.eastButton);
+
+        eastButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updatePos(250,0);
+            }
+        });
+
+        Button westButton = (Button)mFloatLayout.findViewById(R.id.westButton);
+
+        westButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updatePos(-250,0);
+            }
+        });
+
+
         mWindowParams = new WindowManager.LayoutParams();
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         if (Build.VERSION.SDK_INT >= 26) {//8.0新特性
@@ -59,10 +99,23 @@ public class FloatWindow implements View.OnTouchListener {
         mWindowParams.format = PixelFormat.RGBA_8888;
         mWindowParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mWindowParams.gravity = Gravity.START | Gravity.TOP;
-        mWindowParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        mWindowParams.height = 108;
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager manager = (WindowManager) mContext.getSystemService(Service.WINDOW_SERVICE);
+        if (manager != null) {
+            manager.getDefaultDisplay().getMetrics(metrics);
+        }
+
+        float density = metrics.density;
+
+
+        mWindowParams.width =(int)( 150*density);
+        mWindowParams.height =(int)( 150*density);
 //        mWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         Log.d("FLOAT","initFloatWindow finish");
+
+
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -89,12 +142,21 @@ public class FloatWindow implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 Log.d("FLOAT","ACTION_MOVE");
                 // 更新浮动窗口位置参数
+//                mInViewX = motionEvent.getX();
+//                mInViewY = motionEvent.getY();
+
                 mInScreenX = motionEvent.getRawX();
                 mInScreenY = motionEvent.getRawY() - getSysBarHeight(mContext);
                 mWindowParams.x = (int) (mInScreenX- mInViewX);
                 mWindowParams.y = (int) (mInScreenY - mInViewY);
                 // 手指移动的时候更新小悬浮窗的位置
-                mWindowManager.updateViewLayout(mFloatLayout, mWindowParams);
+
+//                if(moveAble) {
+//                    updatePos(mInScreenX- mInViewX, mInScreenY - mInViewY);
+//                }else{
+                    mWindowManager.updateViewLayout(mFloatLayout, mWindowParams);
+//                }
+
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d("FLOAT","ACTION_UP");
@@ -102,6 +164,8 @@ public class FloatWindow implements View.OnTouchListener {
                 if (mDownInScreenX  == mInScreenX && mDownInScreenY == mInScreenY){
 
                 }
+                nowPisX = 0;
+                nowPisY=0;
                 break;
         }
         return true;
@@ -130,18 +194,43 @@ public class FloatWindow implements View.OnTouchListener {
             mFloatLayout.setAlpha(1);
     }
 
+    public static float nowPisX= 0;
+    public static float nowPisY= 0;
+    private void  updatePos(float pisX,float pisY){
+//        nowPisX = pisX;
+////        nowPisY=pisY;
+
+        String latLngStr[]=MockGpsService.latLngInfo.split("&");
+
+        double lat = Double.valueOf(latLngStr[0]) + (pisX) / 250 * 0.00008;
+        latLngStr[0]=lat+"";
+        double lng = Double.valueOf(latLngStr[1]) + (pisY) / 250 * 0.00008;
+        latLngStr[1]=lng+"";
+        MockGpsService.latLngInfo = latLngStr[0]+"&"+latLngStr[1];
+
+//
+//        DisplayToast(MockGpsService.targetlatLngInfo );
+    }
+    private boolean moveAble=true;
     private void clicks(int intervalTime){ // 最长间隔时间
+
+        DisplayToast("danji");
+
+
         if(firstClickTime > 0){
             if(System.currentTimeMillis() - firstClickTime < intervalTime){
-                Log.d("TEST","双击事件");
-                firstClickTime = 0; // 将第一次点击时间置为0
 
-                //唤起MainActivity
-                Intent intent = new Intent(mContext, MainActivity.class);
-                intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                intent.setAction(Intent.ACTION_MAIN);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                mContext.startActivity(intent);
+                moveAble = !moveAble;
+                DisplayToast("小窗口移动："+moveAble);
+//                Log.d("TEST","双击事件");
+//                firstClickTime = 0; // 将第一次点击时间置为0
+//
+//                //唤起MainActivity
+//                Intent intent = new Intent(mContext, MainActivity.class);
+//                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//                intent.setAction(Intent.ACTION_MAIN);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+//                mContext.startActivity(intent);
             }
         }
 
